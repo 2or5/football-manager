@@ -2,7 +2,9 @@ package com.football_manager.service;
 
 import com.football_manager.dto.request.PlayerDtoRequest;
 import com.football_manager.dto.response.PlayerDtoResponse;
+import com.football_manager.dto.response.TeamDtoResponse;
 import com.football_manager.entity.Player;
+import com.football_manager.entity.Team;
 import com.football_manager.exception.IdNotFoundException;
 import com.football_manager.repository.PlayerRepository;
 import jakarta.transaction.Transactional;
@@ -83,6 +85,16 @@ public class PlayerService {
                 .lastName(player.getLastName())
                 .age(player.getAge())
                 .experienceMonths(player.getExperienceMonths())
+                .team(mapToTeamDto(player.getTeam()))
+                .build();
+    }
+
+    private TeamDtoResponse mapToTeamDto(Team team) {
+        return team == null ? null : TeamDtoResponse.builder()
+                .id(team.getId())
+                .name(team.getName())
+                .balance(team.getBalance())
+                .commissionPercentage(team.getCommissionPercentage())
                 .build();
     }
 }

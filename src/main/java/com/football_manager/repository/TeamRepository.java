@@ -14,7 +14,8 @@ public class TeamRepository {
     private EntityManager entityManager;
 
     public List<Team> getAllTeams() {
-        return entityManager.createQuery("SELECT t FROM Team t", Team.class).getResultList();
+        return entityManager.createQuery("SELECT t FROM Team t LEFT JOIN FETCH t.players", Team.class)
+                .getResultList();
     }
 
     public Optional<Team> getTeamById(Integer id) {

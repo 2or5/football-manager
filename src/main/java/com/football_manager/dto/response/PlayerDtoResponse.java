@@ -16,4 +16,6 @@ public class PlayerDtoResponse {
     private Integer age;
 
     private Integer experienceMonths;
+
+    private TeamDtoResponse team;
 }
