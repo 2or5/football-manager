@@ -1,6 +1,6 @@
 package com.football_manager.controller;
 
-import com.football_manager.dto.TeamDto;
+import com.football_manager.dto.response.TeamDtoResponse;
 import com.football_manager.dto.request.TeamDtoRequest;
 import com.football_manager.service.TeamService;
 import jakarta.validation.Valid;
@@ -28,23 +28,23 @@ public class TeamController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TeamDto>> getAllTeams() {
+    public ResponseEntity<List<TeamDtoResponse>> getAllTeams() {
         return ResponseEntity.ok(teamService.getAllTeams());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TeamDto> getTeam(@PathVariable Integer id) {
+    public ResponseEntity<TeamDtoResponse> getTeam(@PathVariable Integer id) {
         return ResponseEntity.ok(teamService.getTeamById(id));
     }
 
     @PostMapping
-    public ResponseEntity<TeamDto> createTeam(@Valid @RequestBody TeamDtoRequest teamDtoRequest) {
+    public ResponseEntity<TeamDtoResponse> createTeam(@Valid @RequestBody TeamDtoRequest teamDtoRequest) {
         return ResponseEntity.ok(teamService.createTeam(teamDtoRequest));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<TeamDto> updateTeam(@PathVariable Integer id,
-                                              @Valid @RequestBody TeamDtoRequest teamDtoRequest) {
+    public ResponseEntity<TeamDtoResponse> updateTeam(@PathVariable Integer id,
+                                                      @Valid @RequestBody TeamDtoRequest teamDtoRequest) {
         return ResponseEntity.ok(teamService.updateTeam(id, teamDtoRequest));
     }
 

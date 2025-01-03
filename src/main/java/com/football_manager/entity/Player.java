@@ -9,21 +9,29 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.LocalDate;
+import java.time.Period;
 
 @Entity
-@Table(name = "teams")
+@Table(name = "players")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class Team {
+public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String name;
+    private String firstName;
 
-    private Double balance;
+    private String lastName;
 
-    private Integer commissionPercentage;
+    private LocalDate birthDate;
+
+    private Integer experienceMonths;
+
+    public Integer getAge() {
+        return Period.between(this.birthDate, LocalDate.now()).getYears();
+    }
 }
