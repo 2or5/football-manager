@@ -1,11 +1,11 @@
-package com.football_manager.dto;
+package com.football_manager.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class TeamDto {
+public class TeamDtoResponse {
 
     private Integer id;
 
