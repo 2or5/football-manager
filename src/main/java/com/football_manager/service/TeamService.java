@@ -1,8 +1,9 @@
 package com.football_manager.service;
 
-import com.football_manager.dto.response.PlayerDtoResponse;
-import com.football_manager.dto.response.TeamDtoResponse;
+import com.football_manager.dto.response.PlayerResponse;
+import com.football_manager.dto.response.TeamPlayerDtoResponse;
 import com.football_manager.dto.request.TeamDtoRequest;
+import com.football_manager.dto.response.TeamDtoResponse;
 import com.football_manager.entity.Player;
 import com.football_manager.entity.Team;
 import com.football_manager.exception.IdNotFoundException;
@@ -26,19 +27,19 @@ public class TeamService {
         this.teamRepository = teamRepository;
     }
 
-    public List<TeamDtoResponse> getAllTeams() {
+    public List<TeamPlayerDtoResponse> getAllTeams() {
         List<Team> teams = teamRepository.getAllTeams();
 
         return teams.stream()
-                .map(this::mapToDto)
+                .map(this::mapToTeamPlayerDto)
                 .collect(Collectors.toList());
     }
 
-    public TeamDtoResponse getTeamById(Integer id) {
+    public TeamPlayerDtoResponse getTeamById(Integer id) {
         Team team = teamRepository.getTeamById(id)
                 .orElseThrow(() -> new IdNotFoundException(TEAM_NOT_FOUND_MESSAGE + id));
 
-        return mapToDto(team);
+        return mapToTeamPlayerDto(team);
     }
 
     public TeamDtoResponse createTeam(TeamDtoRequest teamDtoRequest) {
@@ -49,7 +50,7 @@ public class TeamService {
                 .build();
 
         Team createdTeam = teamRepository.saveTeam(team);
-        return mapToDto(createdTeam);
+        return mapToTeamDto(createdTeam);
     }
 
     public TeamDtoResponse updateTeam(Integer id, TeamDtoRequest teamDtoRequest) {
@@ -63,7 +64,7 @@ public class TeamService {
                 .build();
 
         Team updatedTeam = teamRepository.updateTeam(teamToBeUpdated);
-        return mapToDto(updatedTeam);
+        return mapToTeamDto(updatedTeam);
     }
 
     public String deleteTeam(Integer id) {
@@ -75,8 +76,17 @@ public class TeamService {
         }
     }
 
-    private TeamDtoResponse mapToDto(Team team) {
+    private TeamDtoResponse mapToTeamDto(Team team) {
         return TeamDtoResponse.builder()
+                .id(team.getId())
+                .name(team.getName())
+                .balance(team.getBalance())
+                .commissionPercentage(team.getCommissionPercentage())
+                .build();
+    }
+
+    private TeamPlayerDtoResponse mapToTeamPlayerDto(Team team) {
+        return TeamPlayerDtoResponse.builder()
                 .id(team.getId())
                 .name(team.getName())
                 .balance(team.getBalance())
@@ -85,9 +95,9 @@ public class TeamService {
                 .build();
     }
 
-    private List<PlayerDtoResponse> mapPlayersToDto(List<Player> players) {
+    private List<PlayerResponse> mapPlayersToDto(List<Player> players) {
         return players.stream()
-                .map(player -> PlayerDtoResponse.builder()
+                .map(player -> PlayerResponse.builder()
                         .id(player.getId())
                         .firstName(player.getFirstName())
                         .lastName(player.getLastName())

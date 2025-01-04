@@ -23,4 +23,7 @@ public class PlayerDtoRequest {
 
     @NotBlank(message = "The last name cannot be blank. Please provide a valid last name.")
     private String lastName;
+
+    @NotNull(message = "Team Id cannot be null.")
+    private Integer teamId;
 }

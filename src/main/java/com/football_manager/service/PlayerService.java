@@ -1,14 +1,14 @@
 package com.football_manager.service;
 
 import com.football_manager.dto.request.PlayerDtoRequest;
-import com.football_manager.dto.response.PlayerDtoResponse;
+import com.football_manager.dto.response.PlayerTeamDtoResponse;
 import com.football_manager.dto.response.TeamDtoResponse;
 import com.football_manager.entity.Player;
 import com.football_manager.entity.Team;
 import com.football_manager.exception.IdNotFoundException;
 import com.football_manager.repository.PlayerRepository;
+import com.football_manager.repository.TeamRepository;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -18,16 +18,20 @@ import java.util.stream.Collectors;
 @Transactional
 public class PlayerService {
 
-    private final String PLAYER_NOT_FOUND_MESSAGE = "The player does not exist by this id: ";
-
     private final PlayerRepository playerRepository;
+    private final TeamRepository teamRepository;
 
     @Autowired
-    public PlayerService(PlayerRepository playerRepository) {
+    public PlayerService(PlayerRepository playerRepository, TeamRepository teamRepository) {
         this.playerRepository = playerRepository;
+        this.teamRepository = teamRepository;
     }
 
-    public List<PlayerDtoResponse> getAllPlayers() {
+    private final String PLAYER_NOT_FOUND_MESSAGE = "The player does not exist by this id: ";
+    private final String TEAM_NOT_FOUND_MESSAGE = "The team does not exist by this id: ";
+    private final String PLAYER_DELETED_MESSAGE = "Player deleted successfully";
+
+    public List<PlayerTeamDtoResponse> getAllPlayers() {
         List<Player> players = playerRepository.getAllPlayers();
 
         return players.stream()
@@ -35,26 +39,32 @@ public class PlayerService {
                 .collect(Collectors.toList());
     }
 
-    public PlayerDtoResponse getPlayerById(Integer id) {
+    public PlayerTeamDtoResponse getPlayerById(Integer id) {
         Player player = playerRepository.getPlayerById(id)
                 .orElseThrow(() -> new IdNotFoundException(PLAYER_NOT_FOUND_MESSAGE + id));
 
         return mapToDto(player);
     }
 
-    public PlayerDtoResponse createPlayer(PlayerDtoRequest playerDtoRequest) {
+    public PlayerTeamDtoResponse createPlayer(PlayerDtoRequest playerDtoRequest) {
+        Team team = teamRepository.getTeamById(playerDtoRequest.getTeamId())
+                .orElseThrow(() -> new IdNotFoundException(TEAM_NOT_FOUND_MESSAGE + playerDtoRequest.getTeamId()));
+
         Player player = Player.builder()
                 .birthDate(playerDtoRequest.getBirthDate())
                 .firstName(playerDtoRequest.getFirstName())
                 .lastName(playerDtoRequest.getLastName())
                 .experienceMonths(playerDtoRequest.getExperienceMonths())
+                .team(team)
                 .build();
 
         Player createdPlayer = playerRepository.savePlayer(player);
         return mapToDto(createdPlayer);
     }
 
-    public PlayerDtoResponse updatePlayer(Integer id, @Valid PlayerDtoRequest playerDtoRequest) {
+    public PlayerTeamDtoResponse updatePlayer(Integer id, PlayerDtoRequest playerDtoRequest) {
+        Team team = teamRepository.getTeamById(playerDtoRequest.getTeamId())
+                .orElseThrow(() -> new IdNotFoundException(TEAM_NOT_FOUND_MESSAGE + playerDtoRequest.getTeamId()));
         Player player = playerRepository.getPlayerById(id)
                 .orElseThrow(() -> new IdNotFoundException(PLAYER_NOT_FOUND_MESSAGE + id));
 
@@ -63,6 +73,7 @@ public class PlayerService {
                 .lastName(playerDtoRequest.getLastName())
                 .birthDate(playerDtoRequest.getBirthDate())
                 .experienceMonths(playerDtoRequest.getExperienceMonths())
+                .team(team)
                 .build();
 
         Player updatedPlayer = playerRepository.updatePlayer(playerToBeUpdated);
@@ -74,12 +85,12 @@ public class PlayerService {
         if (deletedPlayer == 0) {
             throw new IdNotFoundException(PLAYER_NOT_FOUND_MESSAGE + id);
         } else {
-            return "Player deleted successfully";
+            return PLAYER_DELETED_MESSAGE;
         }
     }
 
-    private PlayerDtoResponse mapToDto(Player player) {
-        return PlayerDtoResponse.builder()
+    private PlayerTeamDtoResponse mapToDto(Player player) {
+        return PlayerTeamDtoResponse.builder()
                 .id(player.getId())
                 .firstName(player.getFirstName())
                 .lastName(player.getLastName())

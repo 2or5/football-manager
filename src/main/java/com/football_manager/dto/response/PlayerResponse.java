@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class PlayerDtoResponse {
+public class PlayerResponse {
 
     private Integer id;
 
@@ -16,6 +16,4 @@ public class PlayerDtoResponse {
     private Integer age;
 
     private Integer experienceMonths;
-
-    private TeamDtoResponse team;
 }

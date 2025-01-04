@@ -1,7 +1,8 @@
 package com.football_manager.controller;
 
-import com.football_manager.dto.response.TeamDtoResponse;
+import com.football_manager.dto.response.TeamPlayerDtoResponse;
 import com.football_manager.dto.request.TeamDtoRequest;
+import com.football_manager.dto.response.TeamDtoResponse;
 import com.football_manager.service.TeamService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +29,12 @@ public class TeamController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TeamDtoResponse>> getAllTeams() {
+    public ResponseEntity<List<TeamPlayerDtoResponse>> getAllTeams() {
         return ResponseEntity.ok(teamService.getAllTeams());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TeamDtoResponse> getTeam(@PathVariable Integer id) {
+    public ResponseEntity<TeamPlayerDtoResponse> getTeam(@PathVariable Integer id) {
         return ResponseEntity.ok(teamService.getTeamById(id));
     }
 
@@ -43,8 +44,9 @@ public class TeamController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<TeamDtoResponse> updateTeam(@PathVariable Integer id,
-                                                      @Valid @RequestBody TeamDtoRequest teamDtoRequest) {
+    public ResponseEntity<TeamDtoResponse> updateTeam(
+            @PathVariable Integer id,
+            @Valid @RequestBody TeamDtoRequest teamDtoRequest) {
         return ResponseEntity.ok(teamService.updateTeam(id, teamDtoRequest));
     }
 
