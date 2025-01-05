@@ -18,6 +18,6 @@ public class TeamDtoRequest {
 
     @NotNull(message = "Commission percentage cannot be null. Please specify a value between 0 and 100.")
     @Min(value = 0, message = "Commission percentage must be at least 0.")
-    @Max(value = 100, message = "Commission percentage cannot exceed 100.")
-    private Integer commissionPercentage;
+    @Max(value = 10, message = "Commission percentage cannot exceed 10.")
+    private Double commissionPercentage;
 }

@@ -1,6 +1,7 @@
 package com.football_manager.exception.handler;
 
 import com.football_manager.exception.IdNotFoundException;
+import com.football_manager.exception.InsufficientBalanceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -27,6 +28,17 @@ public class RestExceptionHandler {
         exceptionResponse.setDateTime(date.format(formatter));
 
         return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = InsufficientBalanceException.class)
+    public ResponseEntity<ExceptionResponse> handleInsufficientBalanceException(InsufficientBalanceException ex) {
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse();
+        exceptionResponse.setErrorCode(HttpStatus.BAD_REQUEST.value());
+        exceptionResponse.setMessage(ex.getMessage());
+        exceptionResponse.setDateTime(date.format(formatter));
+
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -27,6 +27,13 @@ public class PlayerController {
         this.playerService = playerService;
     }
 
+    @PostMapping("/{playerId}/transfer/{teamId}")
+    public ResponseEntity<PlayerTeamDtoResponse> transferPlayer(
+            @PathVariable Integer playerId,
+            @PathVariable Integer teamId) {
+        return ResponseEntity.ok(playerService.transferPlayer(playerId, teamId));
+    }
+
     @GetMapping
     public ResponseEntity<List<PlayerTeamDtoResponse>> getAllPlayers() {
         return ResponseEntity.ok(playerService.getAllPlayers());

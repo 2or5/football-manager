@@ -14,7 +14,7 @@ public class TeamPlayerDtoResponse {
 
     private Double balance;
 
-    private Integer commissionPercentage;
+    private Double commissionPercentage;
 
     private List<PlayerResponse> players;
 }

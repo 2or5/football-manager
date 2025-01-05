@@ -13,5 +13,5 @@ public class TeamDtoResponse {
 
     private Double balance;
 
-    private Integer commissionPercentage;
+    private Double commissionPercentage;
 }

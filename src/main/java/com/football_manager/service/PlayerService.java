@@ -6,6 +6,7 @@ import com.football_manager.dto.response.TeamDtoResponse;
 import com.football_manager.entity.Player;
 import com.football_manager.entity.Team;
 import com.football_manager.exception.IdNotFoundException;
+import com.football_manager.exception.InsufficientBalanceException;
 import com.football_manager.repository.PlayerRepository;
 import com.football_manager.repository.TeamRepository;
 import jakarta.transaction.Transactional;
@@ -30,6 +31,7 @@ public class PlayerService {
     private final String PLAYER_NOT_FOUND_MESSAGE = "The player does not exist by this id: ";
     private final String TEAM_NOT_FOUND_MESSAGE = "The team does not exist by this id: ";
     private final String PLAYER_DELETED_MESSAGE = "Player deleted successfully";
+    private final String INSUFFICIENT_BALANCE_MESSAGE = "Insufficient balance";
 
     public List<PlayerTeamDtoResponse> getAllPlayers() {
         List<Player> players = playerRepository.getAllPlayers();
@@ -87,6 +89,34 @@ public class PlayerService {
         } else {
             return PLAYER_DELETED_MESSAGE;
         }
+    }
+
+    public PlayerTeamDtoResponse transferPlayer(Integer playerId, Integer teamId) {
+        Player player = playerRepository.getPlayerById(playerId)
+                .orElseThrow(() -> new IdNotFoundException(PLAYER_NOT_FOUND_MESSAGE + playerId));
+        Team toTeam = teamRepository.getTeamById(teamId)
+                .orElseThrow(() -> new IdNotFoundException(TEAM_NOT_FOUND_MESSAGE + teamId));
+
+        Double totalTransferCost = calculateTotalTransferCost(player, toTeam);
+
+        if (toTeam.getBalance() < totalTransferCost) {
+            throw new InsufficientBalanceException(INSUFFICIENT_BALANCE_MESSAGE);
+        }
+
+        Team fromTeam = player.getTeam();
+        fromTeam.setBalance(fromTeam.getBalance() + totalTransferCost);
+        toTeam.setBalance(toTeam.getBalance() - totalTransferCost);
+
+        player.setTeam(toTeam);
+        playerRepository.savePlayer(player);
+        return mapToDto(player);
+    }
+
+    private Double calculateTotalTransferCost(Player player, Team team) {
+        double playerPrice = (player.getExperienceMonths() * 100000.0) / player.getAge();
+        double commission = playerPrice * (team.getCommissionPercentage() / 100);
+        double totalCost = playerPrice + commission;
+        return Math.round(totalCost * 100.0) / 100.0;
     }
 
     private PlayerTeamDtoResponse mapToDto(Player player) {

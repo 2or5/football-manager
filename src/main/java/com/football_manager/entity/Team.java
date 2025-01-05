@@ -29,7 +29,7 @@ public class Team {
 
     private Double balance;
 
-    private Integer commissionPercentage;
+    private Double commissionPercentage;
 
     @OneToMany(mappedBy = "team")
     private List<Player> players = new ArrayList<>();
