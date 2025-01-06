@@ -48,10 +48,8 @@ public class TeamService {
      * @param id {@link Integer}
      * @return {@link TeamPlayerDtoResponse}.
      */
-    public TeamPlayerDtoResponse getTeamById(Integer id) {
-        Team team = teamRepository.getTeamById(id)
-                .orElseThrow(() -> new IdNotFoundException(TEAM_NOT_FOUND_MESSAGE + id));
-
+    public TeamPlayerDtoResponse getTeam(Integer id) {
+        Team team = getTeamById(id);
         return mapToTeamPlayerDto(team);
     }
 
@@ -75,13 +73,12 @@ public class TeamService {
     /**
      * Method for update team by id.
      *
-     * @param id               {@link Integer}
+     * @param id             {@link Integer}
      * @param teamDtoRequest {@link TeamDtoRequest}
      * @return {@link TeamDtoResponse}.
      */
     public TeamDtoResponse updateTeam(Integer id, TeamDtoRequest teamDtoRequest) {
-        Team team = teamRepository.getTeamById(id)
-                .orElseThrow(() -> new IdNotFoundException(TEAM_NOT_FOUND_MESSAGE + id));
+        Team team = getTeamById(id);
 
         Team teamToBeUpdated = team.toBuilder()
                 .name(teamDtoRequest.getName())
@@ -106,6 +103,11 @@ public class TeamService {
         } else {
             return TEAM_DELETED_MESSAGE;
         }
+    }
+
+    public Team getTeamById(Integer id) {
+        return teamRepository.getTeamById(id)
+                .orElseThrow(() -> new IdNotFoundException(TEAM_NOT_FOUND_MESSAGE + id));
     }
 
     private TeamDtoResponse mapToTeamDto(Team team) {

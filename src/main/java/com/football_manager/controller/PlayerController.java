@@ -59,7 +59,7 @@ public class PlayerController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<PlayerTeamDtoResponse> getPlayer(@PathVariable Integer id) {
-        return ResponseEntity.ok(playerService.getPlayerById(id));
+        return ResponseEntity.ok(playerService.getPlayer(id));
     }
 
     /**

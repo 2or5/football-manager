@@ -8,7 +8,6 @@ import com.football_manager.entity.Team;
 import com.football_manager.exception.IdNotFoundException;
 import com.football_manager.exception.InsufficientBalanceException;
 import com.football_manager.repository.PlayerRepository;
-import com.football_manager.repository.TeamRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,16 +19,15 @@ import java.util.stream.Collectors;
 public class PlayerService {
 
     private final PlayerRepository playerRepository;
-    private final TeamRepository teamRepository;
+    private final TeamService teamService;
 
     @Autowired
-    public PlayerService(PlayerRepository playerRepository, TeamRepository teamRepository) {
+    public PlayerService(PlayerRepository playerRepository, TeamService teamService) {
         this.playerRepository = playerRepository;
-        this.teamRepository = teamRepository;
+        this.teamService = teamService;
     }
 
     private final String PLAYER_NOT_FOUND_MESSAGE = "The player does not exist by this id: ";
-    private final String TEAM_NOT_FOUND_MESSAGE = "The team does not exist by this id: ";
     private final String PLAYER_DELETED_MESSAGE = "Player deleted successfully";
     private final String INSUFFICIENT_BALANCE_MESSAGE = "Insufficient balance";
 
@@ -52,10 +50,8 @@ public class PlayerService {
      * @param id {@link Integer}
      * @return {@link PlayerTeamDtoResponse}.
      */
-    public PlayerTeamDtoResponse getPlayerById(Integer id) {
-        Player player = playerRepository.getPlayerById(id)
-                .orElseThrow(() -> new IdNotFoundException(PLAYER_NOT_FOUND_MESSAGE + id));
-
+    public PlayerTeamDtoResponse getPlayer(Integer id) {
+        Player player = getPlayerById(id);
         return mapToDto(player);
     }
 
@@ -66,8 +62,7 @@ public class PlayerService {
      * @return {@link PlayerTeamDtoResponse}.
      */
     public PlayerTeamDtoResponse createPlayer(PlayerDtoRequest playerDtoRequest) {
-        Team team = teamRepository.getTeamById(playerDtoRequest.getTeamId())
-                .orElseThrow(() -> new IdNotFoundException(TEAM_NOT_FOUND_MESSAGE + playerDtoRequest.getTeamId()));
+        Team team = teamService.getTeamById(playerDtoRequest.getTeamId());
 
         Player player = Player.builder()
                 .birthDate(playerDtoRequest.getBirthDate())
@@ -89,10 +84,8 @@ public class PlayerService {
      * @return {@link PlayerTeamDtoResponse}.
      */
     public PlayerTeamDtoResponse updatePlayer(Integer id, PlayerDtoRequest playerDtoRequest) {
-        Team team = teamRepository.getTeamById(playerDtoRequest.getTeamId())
-                .orElseThrow(() -> new IdNotFoundException(TEAM_NOT_FOUND_MESSAGE + playerDtoRequest.getTeamId()));
-        Player player = playerRepository.getPlayerById(id)
-                .orElseThrow(() -> new IdNotFoundException(PLAYER_NOT_FOUND_MESSAGE + id));
+        Team team = teamService.getTeamById(playerDtoRequest.getTeamId());
+        Player player = getPlayerById(id);
 
         Player playerToBeUpdated = player.toBuilder()
                 .firstName(playerDtoRequest.getFirstName())
@@ -129,10 +122,8 @@ public class PlayerService {
      * @return {@link PlayerTeamDtoResponse}.
      */
     public PlayerTeamDtoResponse transferPlayer(Integer playerId, Integer teamId) {
-        Player player = playerRepository.getPlayerById(playerId)
-                .orElseThrow(() -> new IdNotFoundException(PLAYER_NOT_FOUND_MESSAGE + playerId));
-        Team toTeam = teamRepository.getTeamById(teamId)
-                .orElseThrow(() -> new IdNotFoundException(TEAM_NOT_FOUND_MESSAGE + teamId));
+        Player player = getPlayerById(playerId);
+        Team toTeam = teamService.getTeamById(teamId);
 
         Double totalTransferCost = calculateTotalTransferCost(player, toTeam);
 
@@ -154,6 +145,11 @@ public class PlayerService {
         double commission = playerPrice * (team.getCommissionPercentage() / 100);
         double totalCost = playerPrice + commission;
         return Math.round(totalCost * 100.0) / 100.0;
+    }
+
+    public Player getPlayerById(Integer id) {
+        return playerRepository.getPlayerById(id)
+                .orElseThrow(() -> new IdNotFoundException(PLAYER_NOT_FOUND_MESSAGE + id));
     }
 
     private PlayerTeamDtoResponse mapToDto(Player player) {

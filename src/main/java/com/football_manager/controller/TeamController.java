@@ -46,7 +46,7 @@ public class TeamController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<TeamPlayerDtoResponse> getTeam(@PathVariable Integer id) {
-        return ResponseEntity.ok(teamService.getTeamById(id));
+        return ResponseEntity.ok(teamService.getTeam(id));
     }
 
     /**
