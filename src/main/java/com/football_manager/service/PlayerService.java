@@ -33,6 +33,11 @@ public class PlayerService {
     private final String PLAYER_DELETED_MESSAGE = "Player deleted successfully";
     private final String INSUFFICIENT_BALANCE_MESSAGE = "Insufficient balance";
 
+    /**
+     * Method get all players.
+     *
+     * @return list of {@link PlayerTeamDtoResponse}.
+     */
     public List<PlayerTeamDtoResponse> getAllPlayers() {
         List<Player> players = playerRepository.getAllPlayers();
 
@@ -41,6 +46,12 @@ public class PlayerService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Method get player by id.
+     *
+     * @param id {@link Integer}
+     * @return {@link PlayerTeamDtoResponse}.
+     */
     public PlayerTeamDtoResponse getPlayerById(Integer id) {
         Player player = playerRepository.getPlayerById(id)
                 .orElseThrow(() -> new IdNotFoundException(PLAYER_NOT_FOUND_MESSAGE + id));
@@ -48,6 +59,12 @@ public class PlayerService {
         return mapToDto(player);
     }
 
+    /**
+     * Method for create new player.
+     *
+     * @param playerDtoRequest {@link PlayerDtoRequest}
+     * @return {@link PlayerTeamDtoResponse}.
+     */
     public PlayerTeamDtoResponse createPlayer(PlayerDtoRequest playerDtoRequest) {
         Team team = teamRepository.getTeamById(playerDtoRequest.getTeamId())
                 .orElseThrow(() -> new IdNotFoundException(TEAM_NOT_FOUND_MESSAGE + playerDtoRequest.getTeamId()));
@@ -64,6 +81,13 @@ public class PlayerService {
         return mapToDto(createdPlayer);
     }
 
+    /**
+     * Method for update player by id.
+     *
+     * @param id               {@link Integer}
+     * @param playerDtoRequest {@link PlayerDtoRequest}
+     * @return {@link PlayerTeamDtoResponse}.
+     */
     public PlayerTeamDtoResponse updatePlayer(Integer id, PlayerDtoRequest playerDtoRequest) {
         Team team = teamRepository.getTeamById(playerDtoRequest.getTeamId())
                 .orElseThrow(() -> new IdNotFoundException(TEAM_NOT_FOUND_MESSAGE + playerDtoRequest.getTeamId()));
@@ -82,6 +106,12 @@ public class PlayerService {
         return mapToDto(updatedPlayer);
     }
 
+    /**
+     * Method for delete player by id.
+     *
+     * @param id {@link Integer}
+     * @return {@link String}.
+     */
     public String deletePlayer(Integer id) {
         Integer deletedPlayer = playerRepository.deletePlayer(id);
         if (deletedPlayer == 0) {
@@ -91,6 +121,13 @@ public class PlayerService {
         }
     }
 
+    /**
+     * Method for conducts transfer for player.
+     *
+     * @param playerId {@link Integer}
+     * @param teamId   {@link Integer}
+     * @return {@link PlayerTeamDtoResponse}.
+     */
     public PlayerTeamDtoResponse transferPlayer(Integer playerId, Integer teamId) {
         Player player = playerRepository.getPlayerById(playerId)
                 .orElseThrow(() -> new IdNotFoundException(PLAYER_NOT_FOUND_MESSAGE + playerId));

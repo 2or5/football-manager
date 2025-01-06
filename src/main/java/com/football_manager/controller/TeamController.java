@@ -28,21 +28,45 @@ public class TeamController {
         this.teamService = teamService;
     }
 
+    /**
+     * The controller which returns all teams.
+     *
+     * @return list of {@link TeamPlayerDtoResponse}.
+     */
     @GetMapping
     public ResponseEntity<List<TeamPlayerDtoResponse>> getAllTeams() {
         return ResponseEntity.ok(teamService.getAllTeams());
     }
 
+    /**
+     * The controller which return team by id.
+     *
+     * @param id {@link Integer}
+     * @return team {@link TeamPlayerDtoResponse}.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<TeamPlayerDtoResponse> getTeam(@PathVariable Integer id) {
         return ResponseEntity.ok(teamService.getTeamById(id));
     }
 
+    /**
+     * The controller which create new team.
+     *
+     * @param teamDtoRequest {@link TeamDtoRequest}
+     * @return {@link TeamDtoResponse}.
+     */
     @PostMapping
     public ResponseEntity<TeamDtoResponse> createTeam(@Valid @RequestBody TeamDtoRequest teamDtoRequest) {
         return ResponseEntity.ok(teamService.createTeam(teamDtoRequest));
     }
 
+    /**
+     * The controller which update team.
+     *
+     * @param id             {@link Integer}
+     * @param teamDtoRequest {@link TeamDtoRequest}
+     * @return {@link TeamDtoResponse}.
+     */
     @PatchMapping("/{id}")
     public ResponseEntity<TeamDtoResponse> updateTeam(
             @PathVariable Integer id,
@@ -50,6 +74,12 @@ public class TeamController {
         return ResponseEntity.ok(teamService.updateTeam(id, teamDtoRequest));
     }
 
+    /**
+     * The controller which delete team.
+     *
+     * @param id {@link Integer}
+     * @return {@link String}.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTeam(@PathVariable Integer id) {
         return ResponseEntity.ok(teamService.deleteTeam(id));
