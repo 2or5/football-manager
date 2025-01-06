@@ -65,10 +65,6 @@ public class TeamRepository {
      * @return {@link Integer}.
      */
     public Integer deleteTeam(Integer id) {
-        entityManager.createQuery("UPDATE Player p SET p.team.id = NULL WHERE p.team.id = :id")
-                .setParameter("id", id)
-                .executeUpdate();
-
         return entityManager.createQuery("DELETE FROM Team t WHERE t.id = :id")
                 .setParameter("id", id)
                 .executeUpdate();
