@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  app:
+    image: football-manager:latest
+    container_name: football-manager-app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://footbal-manager-db.ca58y2aqoi1h.us-east-1.rds.amazonaws.com:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    ports:
+      - "8080:8080"
