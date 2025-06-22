@@ -60,23 +60,24 @@ jobs:
 
       - name: Build, tag, and push Docker image
         run: |
-          IMAGE_TAG=$(date +%s)
-          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+          # Дебаг: виведемо всі змінні оточення для перевірки
+          echo "DEBUG: AWS_ACCOUNT_ID='$AWS_ACCOUNT_ID'"
+          echo "DEBUG: AWS_REGION='$AWS_REGION'"
+          echo "DEBUG: ECR_REPOSITORY='$ECR_REPOSITORY'"
 
-          # Перевірка змінних оточення
-          if [ -z "$AWS_ACCOUNT_ID" ] || [ -z "$AWS_REGION" ] || [ -z "$ECR_REPOSITORY" ]; then
-            echo "One or more required environment variables are missing"
+          # Перевірка кожної змінної окремо
+          if [ -z "$AWS_ACCOUNT_ID" ]; then
+            echo "ERROR: AWS_ACCOUNT_ID is empty"
             exit 1
           fi
-
-          # Збираємо образ
-          docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
-
-          # Тегуємо під ECR
-          docker tag $ECR_REPOSITORY:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
-
-          # Пушимо в ECR
-          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
+          if [ -z "$AWS_REGION" ]; then
+            echo "ERROR: AWS_REGION is empty"
+            exit 1
+          fi
+          if [ -z "$ECR_REPOSITORY" ]; then
+            echo "ERROR: ECR_REPOSITORY is empty"
+            exit 1
+          fi
 
       - name: Update ECS service
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
