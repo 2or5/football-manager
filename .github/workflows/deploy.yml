@@ -19,11 +19,8 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
 
-      - name: Make mvnw executable
-        run: chmod +x ./mvnw
-
-      - name: Build project
-        run: ./mvnw clean package -DskipTests
+#      - name: Build project
+#        run: ./mvnw clean package -DskipTests
 
       - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
