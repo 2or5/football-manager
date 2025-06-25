@@ -4,10 +4,6 @@ on:
   push:
     branches: [ master ]
 
-env:
-  IMAGE_TAG: latest
-  CONTAINER_NAME: football-manager
-
 jobs:
   deploy:
     name: Build & Deploy
@@ -23,28 +19,40 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
 
-      - name: Log in to ECR
+#      - name: Build project
+#        run: ./mvnw clean package -DskipTests
+
+      - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Build Docker image
-        run: |
-          docker build -t ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} .
+        run: docker build -t football-manager .
+
+      - name: Tag Docker image
+        run: docker tag football-manager:latest 024848448237.dkr.ecr.us-east-1.amazonaws.com/football-manager-repository:latest
 
       - name: Push Docker image to ECR
-        run: |
-          docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+        run: docker push 024848448237.dkr.ecr.us-east-1.amazonaws.com/football-manager-repository:latest
 
       - name: Render ECS Task Definition
         id: render-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
-          container-name: ${{ env.CONTAINER_NAME }}
-          image: ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+          container-name: football-manager-container
+          image: 024848448237.dkr.ecr.us-east-1.amazonaws.com/football-manager-repository:latest
 
       - name: Deploy to ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        env:
+          AWS_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         with:
-          service: ${{ secrets.ECS_SERVICE_NAME }}
-          cluster: ${{ secrets.ECS_CLUSTER_NAME }}
-          task-definition: ${{ steps.render-task-def.outputs.task-definition-arn }}
+          service: ${{ secrets.ECS_SERVICE }}
+          cluster: ${{ secrets.ECS_CLUSTER }}
+          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
