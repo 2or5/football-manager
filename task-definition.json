@@ -26,21 +26,21 @@
           "awslogs-region": "us-east-1",
           "awslogs-stream-prefix": "ecs"
         }
-      }
-    }
-  ],
-  "environment": [
-    {
-      "name": "SPRING_DATASOURCE_URL",
-      "value": "jdbc:postgresql://footbal-manager-db.ca58y2aqoi1h.us-east-1.rds.amazonaws.com:5432/postgres"
-    },
-    {
-      "name": "SPRING_DATASOURCE_USERNAME",
-      "value": "postgres"
-    },
-    {
-      "name": "SPRING_DATASOURCE_PASSWORD",
-      "value": "postgres"
+      },
+      "environment": [
+        {
+          "name": "SPRING_DATASOURCE_URL",
+          "value": "jdbc:postgresql://footbal-manager-db.ca58y2aqoi1h.us-east-1.rds.amazonaws.com:5432/postgres"
+        },
+        {
+          "name": "SPRING_DATASOURCE_USERNAME",
+          "value": "postgres"
+        },
+        {
+          "name": "SPRING_DATASOURCE_PASSWORD",
+          "value": "postgres"
+        }
+      ]
     }
   ]
 }
